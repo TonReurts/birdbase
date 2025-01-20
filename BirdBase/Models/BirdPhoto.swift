@@ -1,23 +1,23 @@
 import Foundation
+import CoreData
 
-struct BirdPhoto: Identifiable, Codable {
-    let id: UUID
-    let name: String
-    let gender: Gender
-    let location: String
-    let imagePath: String
+class BirdPhoto: NSManagedObject, Identifiable {
+    @NSManaged public var id: UUID
+    @NSManaged public var imageData: Data?
+    @NSManaged public var timestamp: Date
+    @NSManaged public var title: String
+    @NSManaged public var location: String?
+    @NSManaged public var notes: String?
     
-    enum Gender: String, Codable {
-        case male
-        case female
-        case unknown
+    override func awakeFromInsert() {
+        super.awakeFromInsert()
+        id = UUID()
+        timestamp = Date()
     }
 }
 
-// Extension to add search functionality
 extension BirdPhoto {
-    func matches(searchText: String) -> Bool {
-        return name.localizedCaseInsensitiveContains(searchText) ||
-               location.localizedCaseInsensitiveContains(searchText)
+    static func fetchRequest() -> NSFetchRequest<BirdPhoto> {
+        return NSFetchRequest<BirdPhoto>(entityName: "BirdPhoto")
     }
 }
