@@ -1,6 +1,7 @@
 import SwiftUI
 import ImageIO
 import CoreLocation
+import MapKit
 
 struct BirdImage: Identifiable {
     let id = UUID()
@@ -8,6 +9,11 @@ struct BirdImage: Identifiable {
     let uiImage: UIImage
     let coordinates: CLLocationCoordinate2D?
     let description: String?
+}
+
+struct LocationAnnotation: Identifiable {
+    let id = UUID()
+    let coordinate: CLLocationCoordinate2D
 }
 
 class ImageManager: ObservableObject {
@@ -95,56 +101,85 @@ struct FullScreenImageView: View {
     @State private var lastScale: CGFloat = 1.0
     @State private var offset: CGSize = .zero
     @State private var lastOffset: CGSize = .zero
+    @State private var showMap: Bool = false
+    @State private var region: MKCoordinateRegion = MKCoordinateRegion(
+        center: CLLocationCoordinate2D(latitude: 0, longitude: 0),
+        span: MKCoordinateSpan(latitudeDelta: 0.01, longitudeDelta: 0.01)
+    )
     
     var body: some View {
         ZStack {
             Color.black.ignoresSafeArea()
             
-            Image(uiImage: image.uiImage)
-                .resizable()
-                .scaledToFit()
-                .scaleEffect(scale)
-                .offset(offset)
-                .gesture(
-                    MagnificationGesture()
-                        .onChanged { value in
-                            let delta = value / lastScale
-                            lastScale = value
-                            scale = scale * delta
-                        }
-                        .onEnded { _ in
-                            lastScale = 1.0
-                        }
-                )
-                .gesture(
-                    DragGesture()
-                        .onChanged { value in
-                            offset = CGSize(
-                                width: lastOffset.width + value.translation.width,
-                                height: lastOffset.height + value.translation.height
-                            )
-                        }
-                        .onEnded { _ in
-                            lastOffset = offset
-                        }
-                )
-                .simultaneousGesture(
-                    TapGesture(count: 2)
-                        .onEnded {
-                            withAnimation {
-                                scale = scale == 1.0 ? 2.0 : 1.0
-                                offset = .zero
-                                lastOffset = .zero
+            if showMap, let coordinates = image.coordinates {
+                Map(coordinateRegion: .constant(MKCoordinateRegion(
+                    center: coordinates,
+                    span: MKCoordinateSpan(latitudeDelta: 0.01, longitudeDelta: 0.01)
+                )), annotationItems: [LocationAnnotation(coordinate: coordinates)]) { location in
+                    MapMarker(coordinate: location.coordinate, tint: .red)
+                }
+            } else {
+                Image(uiImage: image.uiImage)
+                    .resizable()
+                    .scaledToFit()
+                    .scaleEffect(scale)
+                    .offset(offset)
+                    .gesture(
+                        MagnificationGesture()
+                            .onChanged { value in
+                                let delta = value / lastScale
+                                lastScale = value
+                                scale = scale * delta
                             }
-                        }
-                )
+                            .onEnded { _ in
+                                lastScale = 1.0
+                            }
+                    )
+                    .gesture(
+                        DragGesture()
+                            .onChanged { value in
+                                offset = CGSize(
+                                    width: lastOffset.width + value.translation.width,
+                                    height: lastOffset.height + value.translation.height
+                                )
+                            }
+                            .onEnded { _ in
+                                lastOffset = offset
+                            }
+                    )
+                    .simultaneousGesture(
+                        TapGesture(count: 2)
+                            .onEnded {
+                                withAnimation {
+                                    scale = scale == 1.0 ? 2.0 : 1.0
+                                    offset = .zero
+                                    lastOffset = .zero
+                                }
+                            }
+                    )
+            }
         }
         .overlay(alignment: .topTrailing) {
-            Button(action: { dismiss() }) {
-                Image(systemName: "xmark.circle.fill")
-                    .font(.title)
-                    .foregroundColor(.white)
-                    .padding()
+            HStack {
+                if image.coordinates != nil {
+                    Button(action: {
+                        withAnimation {
+                            showMap.toggle()
+                        }
+                    }) {
+                        Image(systemName: showMap ? "photo.fill" : "map.fill")
+                            .font(.title)
+                            .foregroundColor(.white)
+                            .padding()
+                    }
+                }
+                
+                Button(action: { dismiss() }) {
+                    Image(systemName: "xmark.circle.fill")
+                        .font(.title)
+                        .foregroundColor(.white)
+                        .padding()
+                }
             }
         }
         .overlay(alignment: .bottom) {
@@ -152,16 +187,6 @@ struct FullScreenImageView: View {
                 Text(image.name)
                     .font(.headline)
                     .foregroundColor(.white)
-                
-                if let coordinates = image.coordinates {
-                    HStack {
-                        Image(systemName: "globe")
-                            .foregroundColor(.white)
-                        Text("Coordinates: \(coordinates.latitude), \(coordinates.longitude)")
-                            .font(.subheadline)
-                            .foregroundColor(.white)
-                    }
-                }
                 
                 if let description = image.description {
                     Text(description)
