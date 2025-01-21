@@ -154,9 +154,13 @@ struct FullScreenImageView: View {
                     .foregroundColor(.white)
                 
                 if let coordinates = image.coordinates {
-                    Text("Coordinates: \(coordinates.latitude), \(coordinates.longitude)")
-                        .font(.subheadline)
-                        .foregroundColor(.white)
+                    HStack {
+                        Image(systemName: "globe")
+                            .foregroundColor(.white)
+                        Text("Coordinates: \(coordinates.latitude), \(coordinates.longitude)")
+                            .font(.subheadline)
+                            .foregroundColor(.white)
+                    }
                 }
                 
                 if let description = image.description {
