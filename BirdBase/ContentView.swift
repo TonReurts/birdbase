@@ -15,13 +15,13 @@ class ImageManager: ObservableObject {
     }
     
     private func loadImages() {
-        guard let bundleURL = Bundle.main.url(forResource: "BirdImages", withExtension: nil) else {
-            print("Could not find BirdImages directory in bundle")
+        guard let BirdImagesURL = Bundle.main.url(forResource: "BirdImages", withExtension: nil) else {
+            print("BirdImages folder not found.")
             return
         }
         
         do {
-            let imageFiles = try fileManager.contentsOfDirectory(at: bundleURL, includingPropertiesForKeys: nil)
+            let imageFiles = try fileManager.contentsOfDirectory(at: BirdImagesURL, includingPropertiesForKeys: nil)
                 .filter { $0.pathExtension.lowercased() == "jpg" }
             
             images = imageFiles.compactMap { url in
@@ -33,7 +33,7 @@ class ImageManager: ObservableObject {
                 )
             }.sorted { $0.name < $1.name }
             
-            print("Loaded \(images.count) images from \(bundleURL.path)")
+            print("Loaded \(images.count) images from \(BirdImagesURL.path)")
         } catch {
             print("Error loading images: \(error.localizedDescription)")
         }
