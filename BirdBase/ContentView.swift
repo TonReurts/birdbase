@@ -1,9 +1,13 @@
 import SwiftUI
+import ImageIO
+import CoreLocation
 
 struct BirdImage: Identifiable {
     let id = UUID()
     let name: String
     let uiImage: UIImage
+    let coordinates: CLLocationCoordinate2D?
+    let description: String?
 }
 
 class ImageManager: ObservableObject {
@@ -27,9 +31,49 @@ class ImageManager: ObservableObject {
             images = imageFiles.compactMap { url in
                 guard let imageData = try? Data(contentsOf: url),
                       let uiImage = UIImage(data: imageData) else { return nil }
+                
+                // Extract metadata
+                let coordinates: CLLocationCoordinate2D?
+                let description: String?
+                
+                if let source = CGImageSourceCreateWithData(imageData as CFData, nil) {
+                    if let metadata = CGImageSourceCopyPropertiesAtIndex(source, 0, nil) as? [String: Any],
+                       let gpsInfo = metadata[kCGImagePropertyGPSDictionary as String] as? [String: Any] {
+                        
+                        if let latitude = gpsInfo[kCGImagePropertyGPSLatitude as String] as? Double,
+                           let longitude = gpsInfo[kCGImagePropertyGPSLongitude as String] as? Double {
+                            
+                            let latRef = gpsInfo[kCGImagePropertyGPSLatitudeRef as String] as? String ?? "N"
+                            let longRef = gpsInfo[kCGImagePropertyGPSLongitudeRef as String] as? String ?? "E"
+                            
+                            let lat = latRef == "S" ? -latitude : latitude
+                            let long = longRef == "W" ? -longitude : longitude
+                            
+                            coordinates = CLLocationCoordinate2D(latitude: lat, longitude: long)
+                        } else {
+                            coordinates = nil
+                        }
+                    } else {
+                        coordinates = nil
+                    }
+                    
+                    if let iptcMetadata = CGImageSourceCopyPropertiesAtIndex(source, 0, nil) as? [String: Any],
+                       let iptcData = iptcMetadata[kCGImagePropertyIPTCDictionary as String] as? [String: Any],
+                       let desc = iptcData[kCGImagePropertyIPTCCaptionAbstract as String] as? String {
+                        description = desc
+                    } else {
+                        description = nil
+                    }
+                } else {
+                    coordinates = nil
+                    description = nil
+                }
+                
                 return BirdImage(
                     name: url.deletingPathExtension().lastPathComponent,
-                    uiImage: uiImage
+                    uiImage: uiImage,
+                    coordinates: coordinates,
+                    description: description
                 )
             }.sorted { $0.name < $1.name }
             
@@ -104,13 +148,27 @@ struct FullScreenImageView: View {
             }
         }
         .overlay(alignment: .bottom) {
-            Text(image.name)
-                .font(.headline)
-                .foregroundColor(.white)
-                .padding()
-                .background(.black.opacity(0.6))
-                .cornerRadius(10)
-                .padding(.bottom)
+            VStack(alignment: .leading) {
+                Text(image.name)
+                    .font(.headline)
+                    .foregroundColor(.white)
+                
+                if let coordinates = image.coordinates {
+                    Text("Coordinates: \(coordinates.latitude), \(coordinates.longitude)")
+                        .font(.subheadline)
+                        .foregroundColor(.white)
+                }
+                
+                if let description = image.description {
+                    Text(description)
+                        .font(.subheadline)
+                        .foregroundColor(.white)
+                }
+            }
+            .padding()
+            .background(.black.opacity(0.6))
+            .cornerRadius(10)
+            .padding(.bottom)
         }
         .statusBar(hidden: true)
     }
