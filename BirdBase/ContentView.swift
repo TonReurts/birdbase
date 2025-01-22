@@ -112,7 +112,7 @@ struct FullScreenImageView: View {
             Color.black.ignoresSafeArea()
             
             if showMap, let coordinates = image.coordinates {
-                M	ap(coordinateRegion: .constant(MKCoordinateRegion(
+                Map(coordinateRegion: .constant(MKCoordinateRegion(
                     center: coordinates,
                     span: MKCoordinateSpan(latitudeDelta: 0.01, longitudeDelta: 0.01)
                 )), annotationItems: [LocationAnnotation(coordinate: coordinates)]) { location in
