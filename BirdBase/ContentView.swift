@@ -75,8 +75,12 @@ class ImageManager: ObservableObject {
                     description = nil
                 }
                 
+                var fileName = url.deletingPathExtension().lastPathComponent
+                if let range = fileName.range(of: " \\d+$", options: .regularExpression) {
+                    fileName.removeSubrange(range)
+                }
                 return BirdImage(
-                    name: url.deletingPathExtension().lastPathComponent,
+                    name: fileName,
                     uiImage: uiImage,
                     coordinates: coordinates,
                     description: description
