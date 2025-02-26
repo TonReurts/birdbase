@@ -41,10 +41,11 @@ class ImageManager: ObservableObject {
                 // Extract metadata
                 let coordinates: CLLocationCoordinate2D?
                 let description: String?
+                var fileName: String
                 
                 if let source = CGImageSourceCreateWithData(imageData as CFData, nil) {
                     if let metadata = CGImageSourceCopyPropertiesAtIndex(source, 0, nil) as? [String: Any],
-                       let gpsInfo = metadata[kCGImagePropertyGPSDictionary as String] as? [String: Any] {
+                        let gpsInfo = metadata[kCGImagePropertyGPSDictionary as String] as? [String: Any] {
                         
                         if let latitude = gpsInfo[kCGImagePropertyGPSLatitude as String] as? Double,
                            let longitude = gpsInfo[kCGImagePropertyGPSLongitude as String] as? Double {
@@ -70,12 +71,21 @@ class ImageManager: ObservableObject {
                     } else {
                         description = nil
                     }
+                    
+                    if let iptcMetadata = CGImageSourceCopyPropertiesAtIndex(source, 0, nil) as? [String: Any],
+                       let iptcData = iptcMetadata[kCGImagePropertyIPTCDictionary as String] as? [String: Any],
+                       let keywords = iptcData[kCGImagePropertyIPTCKeywords as String] as? [String],
+                       let firstKeyword = keywords.first {
+                        fileName = firstKeyword
+                    } else {
+                        fileName = url.deletingPathExtension().lastPathComponent
+                    }
                 } else {
                     coordinates = nil
                     description = nil
+                    fileName = url.deletingPathExtension().lastPathComponent
                 }
                 
-                var fileName = url.deletingPathExtension().lastPathComponent
                 if let range = fileName.range(of: " \\d+$", options: .regularExpression) {
                     fileName.removeSubrange(range)
                 }
