@@ -108,6 +108,25 @@ class ImageManager: ObservableObject {
     }
 }
 
+class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
+    @Published var userLocation: CLLocationCoordinate2D?
+    private let locationManager = CLLocationManager()
+    
+    override init() {
+        super.init()
+        locationManager.delegate = self
+        locationManager.requestWhenInUseAuthorization()
+        locationManager.startUpdatingLocation()
+    }
+    
+    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+        if let location = locations.first {
+            userLocation = location.coordinate
+            locationManager.stopUpdatingLocation()
+        }
+    }
+}
+
 struct FullScreenImageView: View {
     let image: BirdImage
     @Environment(\.dismiss) private var dismiss
@@ -219,34 +238,59 @@ struct FullScreenImageView: View {
 
 struct ContentView: View {
     @StateObject private var imageManager = ImageManager()
+    @StateObject private var locationManager = LocationManager()
     @State private var selectedImage: BirdImage?
+    @State private var region = MKCoordinateRegion(
+        center: CLLocationCoordinate2D(latitude: 0, longitude: 0),
+        span: MKCoordinateSpan(latitudeDelta: 10, longitudeDelta: 10)
+    )
     
     var body: some View {
         NavigationView {
             ZStack {
-                Color(red: 0.9, green: 0.8, blue: 1.0)
-                    .ignoresSafeArea()
-                
-                ScrollView {
-                    LazyVStack(spacing: 20) {
-                        ForEach(imageManager.images) { image in
-                            VStack {
-                                Image(uiImage: image.uiImage)
-                                    .resizable()
-                                    .scaledToFit()
-                                    .frame(maxWidth: .infinity)
-                                    .cornerRadius(10)
-                                    .onTapGesture {
-                                        selectedImage = image
-                                    }
-                                
-                                Text(image.name)
-                                    .font(.caption)
-                            }
-                            .padding(.horizontal)
+                Map(coordinateRegion: $region, annotationItems: imageManager.images) { image in
+                    MapAnnotation(coordinate: image.coordinates ?? CLLocationCoordinate2D()) {
+                        Button(action: {
+                            selectedImage = image
+                        }) {
+                            Image(systemName: "photo")
+                                .resizable()
+                                .frame(width: 30, height: 30)
+                                .background(Color.white)
+                                .clipShape(Circle())
                         }
                     }
-                    .padding(.vertical)
+                }
+                .ignoresSafeArea()
+                .onAppear {
+                    if let userLocation = locationManager.userLocation {
+                        region.center = userLocation
+                    }
+                }
+                
+                VStack {
+                    Spacer()
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        HStack {
+                            ForEach(imageManager.images) { image in
+                                VStack {
+                                    Image(uiImage: image.uiImage)
+                                        .resizable()
+                                        .scaledToFit()
+                                        .frame(width: 100, height: 100)
+                                        .cornerRadius(10)
+                                        .onTapGesture {
+                                            selectedImage = image
+                                        }
+                                    
+                                    Text(image.name)
+                                        .font(.caption)
+                                }
+                                .padding(.horizontal)
+                            }
+                        }
+                        .padding(.vertical)
+                    }
                 }
             }
             .navigationTitle("Bird Photos (\(imageManager.images.count))")
