@@ -2,6 +2,7 @@ import SwiftUI
 import ImageIO
 import CoreLocation
 import MapKit
+import LocationManager
 
 struct BirdImage: Identifiable {
     let id = UUID()
@@ -105,25 +106,6 @@ class ImageManager: ObservableObject {
     
     func getImagesPath() -> String? {
         Bundle.main.url(forResource: "BirdImages", withExtension: nil)?.path
-    }
-}
-
-class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
-    @Published var userLocation: CLLocationCoordinate2D?
-    private let locationManager = CLLocationManager()
-    
-    override init() {
-        super.init()
-        locationManager.delegate = self
-        locationManager.requestWhenInUseAuthorization()
-        locationManager.startUpdatingLocation()
-    }
-    
-    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-        if let location = locations.first {
-            userLocation = location.coordinate
-            locationManager.stopUpdatingLocation()
-        }
     }
 }
 

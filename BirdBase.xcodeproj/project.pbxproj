@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		4B278D1D2D3ECEAD00AD34EE /* BirdImages in Resources */ = {isa = PBXBuildFile; fileRef = 4B278D1C2D3ECEAD00AD34EE /* BirdImages */; };
+		4BB739C72D7325A500E431A7 /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 4BB739C62D7325A500E431A7 /* Info.plist */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -32,6 +33,7 @@
 		4BA262A32D39A29A00D70C7D /* BirdBase.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BirdBase.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		4BA262B82D39A29E00D70C7D /* BirdBaseTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = BirdBaseTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		4BA262C22D39A29E00D70C7D /* BirdBaseUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = BirdBaseUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		4BB739C62D7325A500E431A7 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -80,6 +82,7 @@
 		4BA2629A2D39A29900D70C7D = {
 			isa = PBXGroup;
 			children = (
+				4BB739C62D7325A500E431A7 /* Info.plist */,
 				4B278D1C2D3ECEAD00AD34EE /* BirdImages */,
 				4BA262A52D39A29A00D70C7D /* BirdBase */,
 				4BA262BB2D39A29E00D70C7D /* BirdBaseTests */,
@@ -219,6 +222,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				4B278D1D2D3ECEAD00AD34EE /* BirdImages in Resources */,
+				4BB739C72D7325A500E431A7 /* Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
