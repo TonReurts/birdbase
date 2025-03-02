@@ -2,7 +2,6 @@ import SwiftUI
 import ImageIO
 import CoreLocation
 import MapKit
-import LocationManager
 
 struct BirdImage: Identifiable {
     let id = UUID()
@@ -279,6 +278,11 @@ struct ContentView: View {
         }
         .fullScreenCover(item: $selectedImage) { image in
             FullScreenImageView(image: image)
+        }
+        .onChange(of: locationManager.userLocation) { newLocation in
+            if let newLocation = newLocation {
+                region.center = newLocation
+            }
         }
     }
 }
