@@ -3,13 +3,14 @@
 <plist version="1.0">
 <dict>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>Deze app heeft je locatie nodig.</string>
+	<string>We need your location to provide better services.</string>
 
 	<key>NSLocationAlwaysUsageDescription</key>
-	<string>Deze app heeft je locatie nodig.</string>
+	<string>We need your location even when the app is in the background.</string>
 
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-	<string>Deze app heeft je locatie nodig.</string>
+	<string>We need your location for continuous tracking.</string>
 
-</dict>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>We need your location to provide better services.</string></dict>
 </plist>
