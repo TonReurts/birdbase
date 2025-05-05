@@ -10,21 +10,6 @@
 		4B278D1D2D3ECEAD00AD34EE /* BirdImages in Resources */ = {isa = PBXBuildFile; fileRef = 4B278D1C2D3ECEAD00AD34EE /* BirdImages */; };
 /* End PBXBuildFile section */
 
-/* Begin PBXBuildRule section */
-		4B6423452D7B3A8D00B20539 /* PBXBuildRule */ = {
-			isa = PBXBuildRule;
-			compilerSpec = com.apple.compilers.proxy.script;
-			fileType = text.plist;
-			inputFiles = (
-			);
-			isEditable = 1;
-			outputFiles = (
-			);
-			runOncePerArchitecture = 0;
-			script = "# builtin-copyPlist\n";
-		};
-/* End PBXBuildRule section */
-
 /* Begin PBXContainerItemProxy section */
 		4BA262B92D39A29E00D70C7D /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -49,9 +34,22 @@
 		4BA262C22D39A29E00D70C7D /* BirdBaseUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = BirdBaseUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		4B566D3D2DC8E8A8002E22F4 /* Exceptions for "BirdBase" folder in "BirdBase" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 4BA262A22D39A29A00D70C7D /* BirdBase */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		4BA262A52D39A29A00D70C7D /* BirdBase */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				4B566D3D2DC8E8A8002E22F4 /* Exceptions for "BirdBase" folder in "BirdBase" target */,
+			);
 			path = BirdBase;
 			sourceTree = "<group>";
 		};
@@ -125,7 +123,6 @@
 				4BA262A12D39A29A00D70C7D /* Resources */,
 			);
 			buildRules = (
-				4B6423452D7B3A8D00B20539 /* PBXBuildRule */,
 			);
 			dependencies = (
 			);

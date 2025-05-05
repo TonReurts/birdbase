@@ -223,7 +223,7 @@ struct ContentView: View {
     @State private var selectedImage: BirdImage?
     @State private var region = MKCoordinateRegion(
         center: CLLocationCoordinate2D(latitude: 0, longitude: 0),
-        span: MKCoordinateSpan(latitudeDelta: 10, longitudeDelta: 10)
+        span: MKCoordinateSpan(latitudeDelta: 0.1, longitudeDelta: 0.1)
     )
     
     var body: some View {
