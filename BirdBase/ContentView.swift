@@ -4,7 +4,7 @@ import CoreLocation
 import MapKit
 
 struct BirdImage: Identifiable {
-    let id = UUID()
+    let id: UUID = UUID()
     let name: String
     let uiImage: UIImage
     let coordinates: CLLocationCoordinate2D?
@@ -12,26 +12,26 @@ struct BirdImage: Identifiable {
 }
 
 struct LocationAnnotation: Identifiable {
-    let id = UUID()
+    let id: UUID = UUID()
     let coordinate: CLLocationCoordinate2D
 }
 
 class ImageManager: ObservableObject {
     @Published var images: [BirdImage] = []
-    private let fileManager = FileManager.default
+    private let fileManager: FileManager = FileManager.default
     
     init() {
         loadImages()
     }
     
     private func loadImages() {
-        guard let BirdImagesURL = Bundle.main.url(forResource: "BirdImages", withExtension: nil) else {
+        guard let BirdImagesURL: URL = Bundle.main.url(forResource: "BirdImages", withExtension: nil) else {
             print("BirdImages folder not found.")
             return
         }
         
         do {
-            let imageFiles = try fileManager.contentsOfDirectory(at: BirdImagesURL, includingPropertiesForKeys: nil)
+            let imageFiles: [URL] = try fileManager.contentsOfDirectory(at: BirdImagesURL, includingPropertiesForKeys: nil)
                 .filter { $0.pathExtension.lowercased() == "jpg" }
             
             images = imageFiles.compactMap { url in
@@ -110,7 +110,7 @@ class ImageManager: ObservableObject {
 
 struct FullScreenImageView: View {
     let image: BirdImage
-    @Environment(\.dismiss) private var dismiss
+    @Environment(\.dismiss) private var dismiss: DismissAction
     @State private var scale: CGFloat = 1.0
     @State private var lastScale: CGFloat = 1.0
     @State private var offset: CGSize = .zero
@@ -218,10 +218,10 @@ struct FullScreenImageView: View {
 }
 
 struct ContentView: View {
-    @StateObject private var imageManager = ImageManager()
+    @StateObject private var imageManager: ImageManager = ImageManager()
     @StateObject private var locationManager = LocationManager()
     @State private var selectedImage: BirdImage?
-    @State private var region = MKCoordinateRegion(
+    @State private var region: MKCoordinateRegion = MKCoordinateRegion(
         center: CLLocationCoordinate2D(latitude: 0, longitude: 0),
         span: MKCoordinateSpan(latitudeDelta: 0.1, longitudeDelta: 0.1)
     )

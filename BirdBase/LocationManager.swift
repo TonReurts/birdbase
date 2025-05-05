@@ -3,7 +3,7 @@ import CoreLocation
 
 class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
     @Published var userLocation: CLLocationCoordinate2D?
-    private let locationManager = CLLocationManager()
+    private let locationManager: CLLocationManager = CLLocationManager()
     
     override init() {
         super.init()
@@ -12,24 +12,8 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
         locationManager.startUpdatingLocation()
     }
     
-    func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
-        switch status {
-        case .authorizedAlways:
-            print("✅ App has Always Allow location access")
-        case .authorizedWhenInUse:
-            print("✅ App has When In Use location access")
-        case .denied, .restricted:
-            print("❌ User denied location access")
-        case .notDetermined:
-            print("🔄 Location access not determined yet")
-            locationManager.requestAlwaysAuthorization()
-        @unknown default:
-            break
-        }
-    }
-
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-        if let location = locations.first {
+        if let location: CLLocation = locations.first {
             userLocation = location.coordinate
             print("Current location: \(location.coordinate.latitude), \(location.coordinate.longitude)")
             locationManager.stopUpdatingLocation()
@@ -40,10 +24,3 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
         print("Failed to find user's location: \(error.localizedDescription)")
     }
 }
-
-extension CLLocationCoordinate2D: @retroactive Equatable {
-    public static func == (lhs: CLLocationCoordinate2D, rhs: CLLocationCoordinate2D) -> Bool {
-        return lhs.latitude == rhs.latitude && lhs.longitude == rhs.longitude
-    }
-}
-
