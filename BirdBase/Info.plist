@@ -11,6 +11,4 @@
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
 	<string>We need your location for continuous tracking.</string>
 
-	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>We need your location to provide better services.</string></dict>
 </plist>
